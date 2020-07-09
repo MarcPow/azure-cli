@@ -293,12 +293,10 @@ def should_create_new_rg(cmd, rg_name, is_linux):
     return True
 
 
-def does_app_already_exist(cmd, name):
+def get_site_availability(cmd, name):
     """ This is used by az webapp up to verify if a site needs to be created or should just be deployed"""
     client = web_client_factory(cmd.cli_ctx)
-    site_availability = client.check_name_availability(name, 'Microsoft.Web/sites')
-    # check availability returns true to name_available  == site does not exist
-    return site_availability.name_available
+    return client.check_name_availability(name, 'Microsoft.Web/sites')
 
 
 def get_app_details(cmd, name):
@@ -318,7 +316,8 @@ def get_rg_to_use(cmd, user, loc, os_name, rg_name=None):
             return rg_name
         raise CLIError("The ResourceGroup '{}' cannot be used with the os '{}'. Use a different RG".format(rg_name,
                                                                                                            os_name))
-    rg_name = default_rg
+    if rg_name is None:
+        rg_name = default_rg
     return rg_name
 
 
